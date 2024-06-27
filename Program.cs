@@ -60,6 +60,8 @@ namespace RecipeApp
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddScoped<IchatServices,chatServices>();
+            services.AddScoped<IUserServices, UserServices>();
         }
 
         private static void Configure(WebApplication app)
