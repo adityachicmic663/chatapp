@@ -6,6 +6,8 @@ using backendChatApplication.Models;
 using backendChatApplication.Services;
 using backendChatApplication;
 using System.Security.Claims;
+using backendChatApplcation.Hubs;
+using backendChatApplcation.Services;
 
 namespace RecipeApp
 {
@@ -42,6 +44,18 @@ namespace RecipeApp
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddSignalR();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder.AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials()
+                           .WithOrigins("http://localhost:5000"); 
+                });
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -71,11 +85,13 @@ namespace RecipeApp
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+            app.MapHub<chatHub>("/chathub");
 
             using (var scope = app.Services.CreateScope())
             {
