@@ -6,6 +6,8 @@ using backendChatApplication.Models;
 using backendChatApplication.Services;
 using backendChatApplication;
 using System.Security.Claims;
+using backendChatApplcation.Hubs;
+using backendChatApplcation.Services;
 
 namespace RecipeApp
 {
@@ -21,7 +23,7 @@ namespace RecipeApp
 
             Configure(app);
 
-            app.Run();
+            app.Run("http://0.0.0.0:80");
         }
 
         private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -42,6 +44,17 @@ namespace RecipeApp
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddSignalR();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                            .AllowAnyMethod()
+                           .AllowAnyHeader(); 
+                });
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -60,6 +73,8 @@ namespace RecipeApp
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddScoped<IchatServices,chatServices>();
+            services.AddScoped<IUserServices, UserServices>();
         }
 
         private static void Configure(WebApplication app)
@@ -69,11 +84,13 @@ namespace RecipeApp
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+            app.MapHub<chatHub>("/chathub");
 
             using (var scope = app.Services.CreateScope())
             {

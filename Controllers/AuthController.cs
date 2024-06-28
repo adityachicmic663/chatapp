@@ -10,12 +10,12 @@ namespace backendChatApplication.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly ILogger<UsersController> _logger;
+        private readonly ILogger<AuthController> _logger;
 
-        public UsersController(IAuthService authService, ILogger<UsersController> logger)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
             _logger = logger;

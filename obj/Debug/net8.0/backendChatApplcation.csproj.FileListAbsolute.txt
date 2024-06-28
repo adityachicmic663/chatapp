@@ -137,3 +137,6 @@ C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\obj\De
 C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\obj\Debug\net8.0\backendChatApplcation.pdb
 C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\obj\Debug\net8.0\backendChatApplcation.genruntimeconfig.cache
 C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\obj\Debug\net8.0\ref\backendChatApplcation.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\obj\Debug\net8.0\backendChatApplcation.sourcelink.json
