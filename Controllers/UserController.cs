@@ -1,8 +1,7 @@
-<<<<<<< HEAD
-﻿using backendChatApplcation.Services;
-=======
+
+using backendChatApplcation.Models;
 using backendChatApplcation.Services;
->>>>>>> origin/main
+
 using backendChatApplication.Models;
 using backendChatApplication.Services;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +21,7 @@ namespace backendChatApplcation.Controllers
         }
 
         [HttpGet("searchUser")]
-        public ActionResult<List<UserModel>> SearchUser(string searchKey)
+        public ActionResult<List<UserResponse>> SearchUser(string searchKey)
         {
             try
             {
@@ -55,31 +54,7 @@ namespace backendChatApplcation.Controllers
                 });
             }
         }
-        [HttpPut("updateStatus")]
-        public ActionResult UpdateUserStatus(int userId,bool isOnline)
-        {
-            try
-            {
-                _userService.UpdateUserStatus(userId, isOnline);
-                return Ok(new ResponseModel
-                {
-                    statusCode=200,
-                    message="status updated successfully",
-                    data="non data",
-                    isSuccess=true
-                });
-            }
-            catch(Exception ex)
-            {
-                return StatusCode(500, new ResponseModel
-                {
-                    statusCode=500,
-                    message=ex.Message,
-                    data="no data",
-                    isSuccess=false,
-                });
-            }
-        }
+       
        
     }
 }

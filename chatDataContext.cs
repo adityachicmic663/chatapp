@@ -1,8 +1,6 @@
-<<<<<<< HEAD
-﻿using backendChatApplcation.Models;
-=======
+
 using backendChatApplcation.Models;
->>>>>>> origin/main
+
 using backendChatApplication.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -20,7 +18,7 @@ namespace backendChatApplication
 
         public DbSet<UserModel> users { get; set; }
         public DbSet<chatRoomModel> ChatRooms { get; set; }
-        public DbSet<chatMessage> ChatMessages { get; set; }
+        public DbSet<chatMessageModel> ChatMessages { get; set; }
         public DbSet<userChatRoom> UserChatRooms { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -44,7 +42,7 @@ namespace backendChatApplication
 
             modelBuilder.Entity<UserModel>().HasKey(u => u.userId);
             modelBuilder.Entity<chatRoomModel>().HasKey(c => c.chatRoomId);
-            modelBuilder.Entity<chatMessage>().HasKey(m => m.chatMessageId);
+            modelBuilder.Entity<chatMessageModel>().HasKey(m => m.chatMessageId);
             modelBuilder.Entity<userChatRoom>().HasKey(ur => new { ur.userId, ur.chatRoomId });
 
            
@@ -58,12 +56,12 @@ namespace backendChatApplication
                 .WithOne(ur => ur.ChatRoom)
                 .HasForeignKey(ur => ur.chatRoomId);
 
-            modelBuilder.Entity<chatMessage>()
+            modelBuilder.Entity<chatMessageModel>()
                 .HasOne(m => m.chatRoom)
                 .WithMany(c => c.Messages)
                 .HasForeignKey(m => m.chatRoomId);
 
-            modelBuilder.Entity<chatMessage>()
+            modelBuilder.Entity<chatMessageModel>()
                 .HasOne(m => m.sender)
                 .WithMany(u => u.SentMessages)
                 .HasForeignKey(m => m.senderId);

@@ -1,8 +1,7 @@
-<<<<<<< HEAD
-﻿using backendChatApplication;
-=======
+
+using backendChatApplcation.Models;
 using backendChatApplication;
->>>>>>> origin/main
+
 using backendChatApplication.Models;
 
 namespace backendChatApplcation.Services
@@ -10,10 +9,13 @@ namespace backendChatApplcation.Services
     public interface IUserServices
     {
 
-        List<UserModel> SearchUser(string searchkey);
+        List<UserResponse> SearchUser(string searchkey);
 
-        void UpdateUserStatus(int userId, bool isOnline);
-        
+        void AddUserOnline(string connectionId, string userId);
+
+        void RemoveUserOnline(string connectionId);
+
+        List<string> GetOnlineUsers();
     }
 }
 

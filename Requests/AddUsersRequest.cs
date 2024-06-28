@@ -1,8 +1,6 @@
-<<<<<<< HEAD
-﻿namespace backendChatApplcation.Requests
-=======
+
 namespace backendChatApplcation.Requests
->>>>>>> origin/main
+
 {
     public class AddUsersRequest
     {

@@ -1,8 +1,6 @@
-<<<<<<< HEAD
-﻿using System.ComponentModel.DataAnnotations.Schema;
-=======
+
 using System.ComponentModel.DataAnnotations.Schema;
->>>>>>> origin/main
+
 
 namespace backendChatApplcation.Models
 {
@@ -17,7 +15,7 @@ namespace backendChatApplcation.Models
 
         public ICollection<userChatRoom> UserChatRooms { get; set; } = new List<userChatRoom>();
 
-        public ICollection<chatMessage> Messages { get; set; } = new List<chatMessage>();
+        public ICollection<chatMessageModel> Messages { get; set; } = new List<chatMessageModel>();
 
     }
 }

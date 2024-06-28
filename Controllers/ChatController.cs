@@ -1,8 +1,6 @@
-<<<<<<< HEAD
+
 ﻿using backendChatApplcation.Models;
-=======
-using backendChatApplcation.Models;
->>>>>>> origin/main
+
 using backendChatApplcation.Requests;
 using backendChatApplcation.Services;
 using backendChatApplication.Models;
@@ -26,6 +24,17 @@ namespace backendChatApplcation.Controllers
             try
             {
                 var chatRooms = _chatService.GetChatRoomsForUser(userId);
+                if (chatRooms == null || chatRooms.Count==0)
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        statusCode=404,
+                        message= "No chat rooms found for the user.",
+                        data="no data",
+                        isSuccess=false
+
+                    });
+                }
                 return Ok(new ResponseModel
                 {
                     statusCode = 200,
@@ -81,7 +90,7 @@ namespace backendChatApplcation.Controllers
            
         }
         [HttpPost("sendMessage")]
-        public ActionResult<chatMessage> SendMessage(sendMessageRequest request)
+        public ActionResult<chatMessageModel> SendMessage(sendMessageRequest request)
         {
             try
             {
@@ -121,15 +130,12 @@ namespace backendChatApplcation.Controllers
         {
             try
             {
-<<<<<<< HEAD
                 _chatService.AddUserToChatRoom(request.userId, request.chatRoomId);
-=======
-                _chatService.AddUserToChatRoom(request.userId, request.chatRoomId)
->>>>>>> origin/main
+
                 return Ok(new ResponseModel
                 {
                     statusCode = 200,
-                    message = "status updated successfully",
+                    message = "users added to chat",
                     data = "non data",
                     isSuccess = true
                 });

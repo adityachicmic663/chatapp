@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-﻿using backendChatApplcation.Models;
-=======
+
 using backendChatApplcation.Models;
->>>>>>> origin/main
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
@@ -39,11 +36,9 @@ namespace backendChatApplication.Models
         public DateTime? OtpTokenExpiry { get; set; }
         public string profilePicturePath { get; set; }
 
-        public bool isOnline { get; set; } = false;
-
         public ICollection<userChatRoom> UserChatRooms { get; set; } = new List<userChatRoom>();
 
-        public ICollection<chatMessage> SentMessages { get; set; } = new List<chatMessage>();
+        public ICollection<chatMessageModel> SentMessages { get; set; } = new List<chatMessageModel>();
 
     }
 }

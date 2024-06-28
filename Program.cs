@@ -9,7 +9,7 @@ using System.Security.Claims;
 using backendChatApplcation.Hubs;
 using backendChatApplcation.Services;
 
-namespace RecipeApp
+namespace backendChatApplcation
 {
     public class Program
     {
@@ -23,7 +23,7 @@ namespace RecipeApp
 
             Configure(app);
 
-            app.Run("http://0.0.0.0:80");
+            app.Run();
         }
 
         private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -50,16 +50,11 @@ namespace RecipeApp
             {
                 options.AddPolicy("CorsPolicy", builder =>
                 {
-<<<<<<< HEAD
-                    builder.AllowAnyOrigin()
-                            .AllowAnyMethod()
-                           .AllowAnyHeader(); 
-=======
+                    
                     builder.AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials()
                            .WithOrigins("http://localhost:5000"); 
->>>>>>> origin/main
                 });
             });
 

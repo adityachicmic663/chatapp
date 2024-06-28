@@ -1,12 +1,9 @@
-<<<<<<< HEAD
-﻿using backendChatApplication.Models;
-=======
+
 using backendChatApplication.Models;
->>>>>>> origin/main
 
 namespace backendChatApplcation.Models
 {
-    public class chatMessage
+    public class chatMessageModel
     {
 
         public int chatMessageId { get; set; }
@@ -21,8 +18,6 @@ namespace backendChatApplcation.Models
 
     }
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main
+
+

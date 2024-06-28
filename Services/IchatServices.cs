@@ -1,18 +1,14 @@
-<<<<<<< HEAD
-﻿using backendChatApplcation.Models;
-=======
-using backendChatApplcation.Models;
->>>>>>> origin/main
 
+using backendChatApplcation.Models;
 namespace backendChatApplcation.Services
 {
     public interface IchatServices
     {
-        List<chatRoomModel> GetChatRoomsForUser(int userId);
+        List<chatRoomResponse> GetChatRoomsForUser(int userId);
 
-        chatRoomModel CreateChatRoom(string roomName, int creatorId);
+        chatRoomResponse CreateChatRoom(string roomName, int creatorId);
 
-        chatMessage SendMessage(int senderId, int chatRoomId, string message);
+        chatMessageResponse SendMessage(int senderId, int chatRoomId, string message);
 
         void AddUserToChatRoom(int userId, int roomId);
     }

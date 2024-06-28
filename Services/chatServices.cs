@@ -1,9 +1,9 @@
-<<<<<<< HEAD
-﻿using backendChatApplcation.Models;
-=======
+
 using backendChatApplcation.Models;
->>>>>>> origin/main
+using backendChatApplcation.Requests;
 using backendChatApplication;
+using Microsoft.AspNetCore.Mvc.Routing;
+using System.Linq.Expressions;
 
 namespace backendChatApplcation.Services
 {
@@ -15,12 +15,30 @@ namespace backendChatApplcation.Services
         {
             _context = dataContext;
         }
-        public List<chatRoomModel> GetChatRoomsForUser(int userId)
+        public List<chatRoomResponse> GetChatRoomsForUser(int userId)
         {
-            return _context.UserChatRooms.Where(ucr => ucr.userId == userId).Select(ucr=>ucr.ChatRoom).ToList();
+            var userExists=_context.users.Any(u=>u.userId == userId);
+            if (!userExists)
+            {
+                return new List<chatRoomResponse>();
+            }
+            
+              var listofChats  = _context.UserChatRooms.Where(ucr => ucr.userId == userId).Select(ucr=>ucr.ChatRoom).ToList();
+            var chatlistResponse=new List<chatRoomResponse>();
+
+            foreach(var chatRoom in listofChats)
+            {
+                var response = new chatRoomResponse
+                {
+                    chatRoomName = chatRoom.chatRoomName,
+                    CreatedAt = chatRoom.CreatedAt
+                };
+               chatlistResponse.Add(response);
+            }
+           return chatlistResponse;
         }
 
-        public chatRoomModel CreateChatRoom(string roomName, int creatorId)
+        public chatRoomResponse CreateChatRoom(string roomName, int creatorId)
         {
             var newRoom = new chatRoomModel
             {
@@ -33,19 +51,26 @@ namespace backendChatApplcation.Services
             {
                 userId = creatorId,
                 chatRoomId = newRoom.chatRoomId,
-                joinedAt = DateTime.Now
+                joinedAt = DateTime.Now,
+                ChatRoom=newRoom
             };
 
             _context.UserChatRooms.Add(userChatRoom);
 
             _context.SaveChanges();
 
-            return newRoom;
+            var response = new chatRoomResponse
+            {
+                chatRoomName = newRoom.chatRoomName,
+                CreatedAt = newRoom.CreatedAt
+            };
+
+            return response;
         }
      
-        public chatMessage SendMessage(int senderId, int chatRoomId, string message)
+        public chatMessageResponse SendMessage(int senderId, int chatRoomId, string message)
         {
-            var newMessage = new chatMessage
+            var newMessage = new chatMessageModel
             {
                 senderId = senderId,
                 chatRoomId = chatRoomId,
@@ -54,8 +79,13 @@ namespace backendChatApplcation.Services
             };
             _context.ChatMessages.Add(newMessage);
             _context.SaveChanges();
-
-            return newMessage;
+            var response = new chatMessageResponse
+            {
+                senderId = senderId,
+                message = message,
+                sendAt = newMessage.SendAt
+            };
+            return response;
         }
 
         public void AddUserToChatRoom(int userId, int roomId)
@@ -70,5 +100,6 @@ namespace backendChatApplcation.Services
             _context.UserChatRooms.Add(userChatRoom);
             _context.SaveChanges();
         }
+
     }
 }
