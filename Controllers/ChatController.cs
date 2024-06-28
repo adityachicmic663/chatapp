@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿using backendChatApplcation.Models;
+=======
+using backendChatApplcation.Models;
+>>>>>>> origin/main
 using backendChatApplcation.Requests;
 using backendChatApplcation.Services;
 using backendChatApplication.Models;
@@ -117,7 +121,11 @@ namespace backendChatApplcation.Controllers
         {
             try
             {
+<<<<<<< HEAD
                 _chatService.AddUserToChatRoom(request.userId, request.chatRoomId);
+=======
+                _chatService.AddUserToChatRoom(request.userId, request.chatRoomId)
+>>>>>>> origin/main
                 return Ok(new ResponseModel
                 {
                     statusCode = 200,

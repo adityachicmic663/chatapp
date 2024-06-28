@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿using backendChatApplcation.Services;
+=======
+using backendChatApplcation.Services;
+>>>>>>> origin/main
 using backendChatApplication.Models;
 using backendChatApplication.Services;
 using Microsoft.AspNetCore.Http;

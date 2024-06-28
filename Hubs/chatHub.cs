@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿using backendChatApplcation.Services;
+=======
+using backendChatApplcation.Services;
+>>>>>>> origin/main
 using Microsoft.AspNetCore.SignalR;
 
 namespace backendChatApplcation.Hubs

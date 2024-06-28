@@ -50,9 +50,16 @@ namespace RecipeApp
             {
                 options.AddPolicy("CorsPolicy", builder =>
                 {
+<<<<<<< HEAD
                     builder.AllowAnyOrigin()
                             .AllowAnyMethod()
                            .AllowAnyHeader(); 
+=======
+                    builder.AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials()
+                           .WithOrigins("http://localhost:5000"); 
+>>>>>>> origin/main
                 });
             });
 

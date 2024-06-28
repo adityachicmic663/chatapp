@@ -1,4 +1,4 @@
-﻿namespace backendChatApplcation.Requests
+namespace backendChatApplcation.Requests
 {
     public class ChatRoomRequest
     {

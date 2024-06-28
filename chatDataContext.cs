@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿using backendChatApplcation.Models;
+=======
+using backendChatApplcation.Models;
+>>>>>>> origin/main
 using backendChatApplication.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

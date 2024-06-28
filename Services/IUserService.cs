@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿using backendChatApplication;
+=======
+using backendChatApplication;
+>>>>>>> origin/main
 using backendChatApplication.Models;
 
 namespace backendChatApplcation.Services
@@ -12,3 +16,4 @@ namespace backendChatApplcation.Services
         
     }
 }
+

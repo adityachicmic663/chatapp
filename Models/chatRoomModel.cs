@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+=======
+using System.ComponentModel.DataAnnotations.Schema;
+>>>>>>> origin/main
 
 namespace backendChatApplcation.Models
 {
