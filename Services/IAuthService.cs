@@ -1,10 +1,11 @@
-﻿using backendChatApplication.Requests;
+﻿using backendChatApplcation.Models;
+using backendChatApplication.Requests;
 
 namespace backendChatApplication.Services
 {
     public interface IAuthService
     {
-        string Register(RegisterRequest request);
+        UserResponse Register(RegisterRequest request);
 
         string Login(LoginRequest request);
 

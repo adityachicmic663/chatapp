@@ -4,7 +4,7 @@ using backendChatApplication.Models;
 
 namespace backendChatApplcation.Models
 {
-    public class userChatRoom
+    public class userChatRoomModel
     {
         public int userId { get; set; }
         public int chatRoomId { get; set; }

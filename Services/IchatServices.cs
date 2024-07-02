@@ -8,8 +8,16 @@ namespace backendChatApplcation.Services
 
         chatRoomResponse CreateChatRoom(string roomName, int creatorId);
 
-        chatMessageResponse SendMessage(int senderId, int chatRoomId, string message);
+        groupChatResponse SendMessage(int senderId, int chatRoomId, string message);
+
+        oneToOneResponse SendDirectMessage(int senderId, int receiverId, string message);
 
         void AddUserToChatRoom(int userId, int roomId);
+
+        void RemoveUserFromChatRoom(int userId, int chatRoomId);
+
+        groupChatResponse SendFileMessage(int senderId, int chatRoomId, string filePath);
+
+        oneToOneResponse SendDirectFileMessage(int senderId, int receiverId, string filePath);
     }
 }

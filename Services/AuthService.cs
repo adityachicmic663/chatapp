@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.IO;
+using backendChatApplcation.Models;
 
 namespace backendChatApplication.Services
 {
@@ -26,7 +27,7 @@ namespace backendChatApplication.Services
             _uploadPath = configuration.GetValue<string>("UploadPath");
         }
 
-        public string Register(RegisterRequest request)
+        public UserResponse Register(RegisterRequest request)
         {
             if (_context.users.Any(x => x.email == request.email))
             {
@@ -40,13 +41,26 @@ namespace backendChatApplication.Services
                 password = request.password,
                 role = "user",
                 FirstLanguage="English",
-                profilePicturePath=request.profilePicturePath
+                profilePicturePath=request.profilePicturePath,
+                age= request.age,
+                gender= request.gender,
+                address= request.address
             };
 
             _context.users.Add(newUser);
             _context.SaveChanges();
 
-            return Login(new LoginRequest { email = request.email, password = request.password });
+            var response = new UserResponse
+            {
+                userName = request.userName,
+                email = request.email,
+                phoneNumber = request.phoneNumber,
+                age = request.age,
+                address = request.address,
+                gender = request.gender
+            };
+
+            return response;
         }
 
         public string Login(LoginRequest request)

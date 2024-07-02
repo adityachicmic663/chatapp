@@ -1,50 +1,120 @@
 
 using backendChatApplcation.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace backendChatApplcation.Hubs
 {
-    public class chatHub : Hub
+    [Authorize]
+    public  class chatHub : Hub
     {
-        private readonly IchatServices _chatService;
-        private readonly IUserServices _userService;
+        private readonly IchatServices _chatServices;
+        private readonly IUserServices _userServices;
+        private readonly IFileService _fileService;
+        private readonly ILogger<chatHub> _logger;
+        
 
 
-        public chatHub(IchatServices chatService,IUserServices userService)
+
+        public chatHub(IchatServices chatService, IUserServices userService, IFileService fileService, ILogger<chatHub> logger)
         {
-            _chatService = chatService;
-            _userService = userService;
+            _chatServices = chatService;
+            _userServices = userService;
+            _fileService = fileService;
+            _logger = logger;
         }
 
-        public async Task SendMessage(int senderId,int chatRoomId,string message)
+        public async Task AddUserToGroup(string groupName, string message, string userName)
         {
-            _chatService.SendMessage(senderId, chatRoomId, message);
+            
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            await Clients.Group(groupName).SendAsync("UserJoined", message, userName);
+        }
 
-            await Clients.Group(chatRoomId.ToString()).SendAsync("ReceivedMessage", senderId, message); 
+
+        public async Task RemoveUserFromGroup(string groupName)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            await Clients.Group(groupName).SendAsync("UserLeftGroup");
+        }
+        public async Task ShareFileToGroup(string groupName, int senderId, IFormFile file)
+        {
+            var filePath = await _fileService.SaveFileAsync(file);
+            await Clients.Group(groupName).SendAsync("ReceivedFileMessage", senderId, filePath);
+        }
+
+        public async Task ShareFileToUser(int senderId, string user, IFormFile file)
+        {
+            var filePath = await _fileService.SaveFileAsync(file);
+
+            await Clients.Client(user).SendAsync("ReceivedFileMessage", senderId, filePath);
+
+        }
+
+        public async Task SendMessageToGroup(string user, string message, string groupName)
+        {
+
+            await Clients.Group(groupName).SendAsync("ReceivedMessage", user, message);
+           
+        }
+
+        public async Task SendMessage(string message)
+        {
+            try
+            {
+                await Clients.All.SendAsync("ReceivedMessage", message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in SendMessage method: {ex.Message}");
+                throw;
+            }
+        }
+        public async Task SendPrivateMessage(string user, string message)
+        {
+            await Clients.Users(user).SendAsync("ReceivedMessage", message);
         }
 
         public override async Task OnConnectedAsync()
         {
-            string userId = Context.User.Identity.Name;  // assuming userId is stored in Claims
-            if(!string.IsNullOrEmpty(userId) )
+            Console.WriteLine("Client connected: " + Context.ConnectionId);
+          
+            string userId = Context.User.Identity.Name;
+            if (!string.IsNullOrEmpty(userId))
             {
-                _userService.AddUserOnline(Context.ConnectionId, userId);
-                await Groups.AddToGroupAsync(Context.ConnectionId, userId);  //Add user to a group(chat room) based on userId
-                await Clients.Others.SendAsync("UserConnected", userId);  //Notify clients of user status change
+                _userServices.AddUserOnline(Context.ConnectionId, userId);
+                await Clients.All.SendAsync("UserConnected", $"{Context.ConnectionId}{userId} has joined the chat");
+                await Groups.AddToGroupAsync(Context.ConnectionId, userId);
+
             }
         }
 
+
         public override async Task OnDisconnectedAsync(Exception ex)
         {
+
+            Console.WriteLine("Client disconnected " + Context.ConnectionId);
             string userId = Context.User.Identity.Name;
-            if(!string.IsNullOrEmpty(userId) )
+            if (!string.IsNullOrEmpty(userId))
             {
-                _userService.RemoveUserOnline(Context.ConnectionId);
-                await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId);  // remove user from groups and notify other of disconnection
-                await Clients.Others.SendAsync("user disconnected", userId);
+                _userServices.RemoveUserOnline(Context.ConnectionId);
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId);
+                await Clients.All.SendAsync("user disconnected", userId);
             }
 
             await base.OnDisconnectedAsync(ex);
+        }
+
+        public async Task<List<string>> onlineUsers()
+        {
+            var list = _userServices.GetOnlineUsers();
+            foreach(var onlineusers in list)
+            {
+                Console.WriteLine($"Online users: {onlineusers}");
+            }
+            return list;
         }
 
     }

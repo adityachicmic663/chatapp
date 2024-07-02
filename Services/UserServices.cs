@@ -29,25 +29,50 @@ namespace backendChatApplcation.Services
                     address = user.address,
                     phoneNumber = user.phoneNumber,
                     age = user.age,
-                    isOnline = false
+                    gender = user.gender
                 };
                 responselist.Add(response);
             }
             return responselist;
         }
-        public void AddUserOnline(string connectionId,string userId)
+        public void AddUserOnline(string connectionId,string  userId)
         {
-            _onlineUsers.TryAdd(connectionId, userId);
+           if( _onlineUsers.TryAdd(connectionId, userId)){
+                if (int.TryParse(userId, out int id))
+                {
+                    UpdateUserStatus(id, true);
+                }
+            }
         }
          
         public void RemoveUserOnline(string connectionId)
         {
-            _onlineUsers.TryRemove(connectionId, out _);
+            if(_onlineUsers.TryRemove(connectionId, out string userId))
+            {
+                if (int.TryParse(userId, out int id))
+                {
+                    UpdateUserStatus(id, false);
+                }
+            }
         }
 
         public List<string> GetOnlineUsers()
         {
             return _onlineUsers.Values.Distinct().ToList();
+        }
+        public string GetConnectionId(int userId)
+        {
+            return _onlineUsers.FirstOrDefault(x => x.Value == userId.ToString()).Key;
+        }
+
+        private void UpdateUserStatus(int userId,bool isOnline)
+        {
+            var user = _context.users.FirstOrDefault(x => x.userId == userId);
+            if (user != null)
+            {
+                user.isOnline = isOnline;
+                _context.SaveChanges();
+            }
         }
     }
 }

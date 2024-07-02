@@ -23,20 +23,22 @@ namespace backendChatApplication.Models
 
         public bool emailConfirmed { get; set; }
 
-        public string address { get; set; } = "india";
+        public string address { get; set; }
 
         public string FirstLanguage { get; set; } 
 
         public int age { get; set; }
 
-        public string gender { get; set; } = "Male";
+        public string gender { get; set; } 
 
         public string otpToken { get; set; }
 
         public DateTime? OtpTokenExpiry { get; set; }
         public string profilePicturePath { get; set; }
 
-        public ICollection<userChatRoom> UserChatRooms { get; set; } = new List<userChatRoom>();
+        public bool isOnline { get; set; } = false;
+
+        public ICollection<userChatRoomModel> UserChatRooms { get; set; } = new List<userChatRoomModel>();
 
         public ICollection<chatMessageModel> SentMessages { get; set; } = new List<chatMessageModel>();
 

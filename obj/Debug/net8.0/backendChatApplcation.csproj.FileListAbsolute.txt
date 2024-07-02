@@ -140,3 +140,14 @@ C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\obj\De
 C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
 C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\obj\Debug\net8.0\backendChatApplcation.sourcelink.json
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.AspNetCore.Connections.Abstractions.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.AspNetCore.Http.Connections.Client.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.AspNetCore.Http.Connections.Common.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.AspNetCore.SignalR.Client.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.AspNetCore.SignalR.Client.Core.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.AspNetCore.SignalR.Common.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.AspNetCore.SignalR.Protocols.Json.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.Extensions.Features.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\ChicMic\source\repos\backendChatApplcation\backendChatApplcation\bin\Debug\net8.0\Microsoft.Extensions.Options.dll

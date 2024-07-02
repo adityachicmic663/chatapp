@@ -20,5 +20,15 @@ namespace backendChatApplication.Requests
         public string password { get; set; }
 
         public string? profilePicturePath { get; set; }
+
+        [Required]
+        public string gender { get; set; }
+        [Required]
+        public string address {  get; set; }
+        [Required]
+        public int age { get; set; }
+        [Required]
+        public long phoneNumber { get; set; }
+
     }
 }

@@ -19,7 +19,7 @@ namespace backendChatApplication
         public DbSet<UserModel> users { get; set; }
         public DbSet<chatRoomModel> ChatRooms { get; set; }
         public DbSet<chatMessageModel> ChatMessages { get; set; }
-        public DbSet<userChatRoom> UserChatRooms { get; set; }
+        public DbSet<userChatRoomModel> UserChatRooms { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,7 +43,7 @@ namespace backendChatApplication
             modelBuilder.Entity<UserModel>().HasKey(u => u.userId);
             modelBuilder.Entity<chatRoomModel>().HasKey(c => c.chatRoomId);
             modelBuilder.Entity<chatMessageModel>().HasKey(m => m.chatMessageId);
-            modelBuilder.Entity<userChatRoom>().HasKey(ur => new { ur.userId, ur.chatRoomId });
+            modelBuilder.Entity<userChatRoomModel>().HasKey(ur => new { ur.userId, ur.chatRoomId });
 
            
             modelBuilder.Entity<UserModel>()
@@ -76,8 +76,8 @@ namespace backendChatApplication
                 if (!adminExists)
                 {
                     this.Database.ExecuteSqlRaw(@"
-                        INSERT INTO users(userName, role, email, password, phoneNumber, emailConfirmed,address, firstLanguage, age, gender)
-                        VALUES('aditya', 'admin', 'adityabisht8436@gmail.com', 'Aditya@123', 97643567, true,'Rudrapur','Hindi', 23, 'Male')");
+                        INSERT INTO users(userName, role, email, password, phoneNumber, emailConfirmed,address, firstLanguage, age, gender,isOnline)
+                        VALUES('aditya', 'admin', 'adityabisht8436@gmail.com', 'Aditya@123', 97643567, true,'Rudrapur','Hindi', 23, 'Male',false)");
                 }
                 
            

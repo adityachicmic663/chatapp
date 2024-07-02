@@ -8,6 +8,7 @@ using backendChatApplication;
 using System.Security.Claims;
 using backendChatApplcation.Hubs;
 using backendChatApplcation.Services;
+using Microsoft.AspNetCore.Http.Connections;
 
 namespace backendChatApplcation
 {
@@ -16,6 +17,8 @@ namespace backendChatApplcation
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Logging.SetMinimumLevel(LogLevel.Debug);
+            builder.Logging.AddConsole();
 
             ConfigureServices(builder.Services, builder.Configuration);
 
@@ -44,19 +47,18 @@ namespace backendChatApplcation
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddSignalR();
-
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", builder =>
                 {
-                    
                     builder.AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials()
-                           .WithOrigins("http://localhost:5000"); 
+                           .WithOrigins("http://localhost:5180"); 
                 });
             });
+
+
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -71,12 +73,31 @@ namespace backendChatApplcation
                         ValidateAudience = false,
                          NameClaimType = ClaimTypes.Email
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var token = context.Request.Query["access_token"];
+                            if(!string.IsNullOrEmpty(token))
+                            {
+                                context.Token = token;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
+
+
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+            });
             services.AddScoped<IAuthService, AuthService>();
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddScoped<IchatServices,chatServices>();
             services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<IFileService, fileServices>();
         }
 
         private static void Configure(WebApplication app)
@@ -93,6 +114,15 @@ namespace backendChatApplcation
             app.UseAuthorization();
             app.MapControllers();
             app.MapHub<chatHub>("/chathub");
+
+
+
+           /* app.MapHub<chatHub>("/chathub", options =>
+            {
+                options.Transports =
+                    HttpTransportType.WebSockets |
+                    HttpTransportType.LongPolling;
+            }*/
 
             using (var scope = app.Services.CreateScope())
             {

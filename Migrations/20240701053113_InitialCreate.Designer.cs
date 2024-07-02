@@ -12,8 +12,8 @@ using backendChatApplication;
 namespace backendChatApplcation.Migrations
 {
     [DbContext(typeof(chatDataContext))]
-    [Migration("20240627125030_SecondCreate")]
-    partial class SecondCreate
+    [Migration("20240701053113_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace backendChatApplcation.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("backendChatApplcation.Models.chatMessage", b =>
+            modelBuilder.Entity("backendChatApplcation.Models.chatMessageModel", b =>
                 {
                     b.Property<int>("chatMessageId")
                         .ValueGeneratedOnAdd()
@@ -33,15 +33,21 @@ namespace backendChatApplcation.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("chatMessageId"));
 
-                    b.Property<DateTime>("SendAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("chatRoomId")
+                    b.Property<int?>("chatRoomId")
                         .HasColumnType("int");
+
+                    b.Property<string>("filePath")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("message")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int?>("receiverId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("sendAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("senderId")
                         .HasColumnType("int");
@@ -75,7 +81,7 @@ namespace backendChatApplcation.Migrations
                     b.ToTable("ChatRooms");
                 });
 
-            modelBuilder.Entity("backendChatApplcation.Models.userChatRoom", b =>
+            modelBuilder.Entity("backendChatApplcation.Models.userChatRoomModel", b =>
                 {
                     b.Property<int>("userId")
                         .HasColumnType("int");
@@ -155,13 +161,11 @@ namespace backendChatApplcation.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("backendChatApplcation.Models.chatMessage", b =>
+            modelBuilder.Entity("backendChatApplcation.Models.chatMessageModel", b =>
                 {
                     b.HasOne("backendChatApplcation.Models.chatRoomModel", "chatRoom")
                         .WithMany("Messages")
-                        .HasForeignKey("chatRoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("chatRoomId");
 
                     b.HasOne("backendChatApplication.Models.UserModel", "sender")
                         .WithMany("SentMessages")
@@ -174,7 +178,7 @@ namespace backendChatApplcation.Migrations
                     b.Navigation("sender");
                 });
 
-            modelBuilder.Entity("backendChatApplcation.Models.userChatRoom", b =>
+            modelBuilder.Entity("backendChatApplcation.Models.userChatRoomModel", b =>
                 {
                     b.HasOne("backendChatApplcation.Models.chatRoomModel", "ChatRoom")
                         .WithMany("UserChatRooms")

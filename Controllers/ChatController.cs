@@ -89,68 +89,7 @@ namespace backendChatApplcation.Controllers
             }
            
         }
-        [HttpPost("sendMessage")]
-        public ActionResult<chatMessageModel> SendMessage(sendMessageRequest request)
-        {
-            try
-            {
-                var newMessage = _chatService.SendMessage(request.senderId, request.chatRoomId, request.message);
-                if (newMessage == null)
-                {
-                    return BadRequest(new ResponseModel
-                    {
-                        statusCode=400,
-                        message="unable to send message",
-                        data="no data",
-                        isSuccess=false
-
-                    });
-                }
-                return Ok(new ResponseModel
-                {
-                    statusCode = 200,
-                    message = "message is sent successfully",
-                    data = newMessage,
-                    isSuccess = true
-                });
-            }catch(Exception ex)
-            {
-                return StatusCode(500, new ResponseModel
-                {
-                    statusCode = 500,
-                    message = ex.InnerException?.Message ?? ex.Message,
-                    data = "no data",
-                    isSuccess = true
-                });
-            }
-        }
-        [HttpPut("AddUsers")]
-
-        public ActionResult AddUserToChatRoom(AddUsersRequest request)
-        {
-            try
-            {
-                _chatService.AddUserToChatRoom(request.userId, request.chatRoomId);
-
-                return Ok(new ResponseModel
-                {
-                    statusCode = 200,
-                    message = "users added to chat",
-                    data = "non data",
-                    isSuccess = true
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ResponseModel
-                {
-                    statusCode = 500,
-                    message = ex.Message,
-                    data = "no data",
-                    isSuccess = false,
-                });
-            }
-        }
+      
     }
 }
 

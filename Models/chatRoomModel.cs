@@ -13,7 +13,7 @@ namespace backendChatApplcation.Models
 
         public DateTime? CreatedAt { get; set; } = DateTime.Now;
 
-        public ICollection<userChatRoom> UserChatRooms { get; set; } = new List<userChatRoom>();
+        public ICollection<userChatRoomModel> UserChatRooms { get; set; } = new List<userChatRoomModel>();
 
         public ICollection<chatMessageModel> Messages { get; set; } = new List<chatMessageModel>();
 

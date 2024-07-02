@@ -12,6 +12,8 @@
 
         public int age { get; set; }
 
-        public bool isOnline { get; set; }
+        public string gender { get; set; }
+
+
     }
 }

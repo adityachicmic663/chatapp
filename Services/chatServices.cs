@@ -17,25 +17,20 @@ namespace backendChatApplcation.Services
         }
         public List<chatRoomResponse> GetChatRoomsForUser(int userId)
         {
-            var userExists=_context.users.Any(u=>u.userId == userId);
-            if (!userExists)
-            {
-                return new List<chatRoomResponse>();
-            }
-            
-              var listofChats  = _context.UserChatRooms.Where(ucr => ucr.userId == userId).Select(ucr=>ucr.ChatRoom).ToList();
-            var chatlistResponse=new List<chatRoomResponse>();
+            var chatRooms = _context.UserChatRooms.Where(ucr => ucr.userId == userId).Select(ucr => ucr.ChatRoom).ToList();
 
-            foreach(var chatRoom in listofChats)
+            var responseList = new List<chatRoomResponse>();
+
+            foreach (var room in chatRooms)
             {
-                var response = new chatRoomResponse
+                var newRoom = new chatRoomResponse
                 {
-                    chatRoomName = chatRoom.chatRoomName,
-                    CreatedAt = chatRoom.CreatedAt
+                    chatRoomName = room.chatRoomName,
+                    CreatedAt = room.CreatedAt
                 };
-               chatlistResponse.Add(response);
+                responseList.Add(newRoom);
             }
-           return chatlistResponse;
+            return responseList;
         }
 
         public chatRoomResponse CreateChatRoom(string roomName, int creatorId)
@@ -47,50 +42,118 @@ namespace backendChatApplcation.Services
             };
             _context.ChatRooms.Add(newRoom);
 
-            var userChatRoom = new userChatRoom
+            _context.SaveChanges();
+
+            var userChatRoom = new userChatRoomModel
             {
                 userId = creatorId,
                 chatRoomId = newRoom.chatRoomId,
-                joinedAt = DateTime.Now,
-                ChatRoom=newRoom
+                joinedAt = DateTime.Now
             };
 
             _context.UserChatRooms.Add(userChatRoom);
 
             _context.SaveChanges();
-
             var response = new chatRoomResponse
             {
-                chatRoomName = newRoom.chatRoomName,
+                chatRoomName = roomName,
                 CreatedAt = newRoom.CreatedAt
             };
 
             return response;
         }
-     
-        public chatMessageResponse SendMessage(int senderId, int chatRoomId, string message)
+
+        public groupChatResponse SendMessage(int senderId, int chatRoomId, string message)
         {
             var newMessage = new chatMessageModel
             {
                 senderId = senderId,
                 chatRoomId = chatRoomId,
                 message = message,
-                SendAt = DateTime.Now
+                sendAt = DateTime.Now
             };
             _context.ChatMessages.Add(newMessage);
             _context.SaveChanges();
-            var response = new chatMessageResponse
+
+            var response = new groupChatResponse
             {
                 senderId = senderId,
+                chatRoomId = chatRoomId,
                 message = message,
-                sendAt = newMessage.SendAt
+                sendAt = newMessage.sendAt
+            };
+
+            return response;
+        }
+        public oneToOneResponse SendDirectMessage(int senderId, int receiverId, string message)
+        {
+            var newMessage = new chatMessageModel
+            {
+                senderId = senderId,
+                receiverId = receiverId,
+                message = message,
+                sendAt = DateTime.Now
+            };
+            _context.ChatMessages.Add(newMessage);
+            _context.SaveChanges();
+
+            var response = new oneToOneResponse
+            {
+                senderId = senderId,
+                receiverId = receiverId,
+                message = message,
+                sendAt = newMessage.sendAt
+            };
+
+            return response;
+        }
+        public groupChatResponse SendFileMessage(int senderId, int chatRoomId, string filePath)
+        {
+            var newMessage = new chatMessageModel
+            {
+                senderId = senderId,
+                chatRoomId = chatRoomId,
+                filePath = filePath,
+                sendAt = DateTime.Now
+            };
+            _context.ChatMessages.Add(newMessage);
+            _context.SaveChanges();
+
+            var response = new groupChatResponse
+            {
+                senderId = senderId,
+                chatRoomId = chatRoomId,
+                filePath = filePath,
+                sendAt = newMessage.sendAt
+            };
+            return response;
+        }
+
+        public oneToOneResponse SendDirectFileMessage(int senderId, int receiverId, string filePath)
+        {
+            var newMessage = new chatMessageModel
+            {
+                senderId = senderId,
+                receiverId = receiverId,
+                filePath = filePath,
+                sendAt = DateTime.Now
+            };
+            _context.ChatMessages.Add(newMessage);
+            _context.SaveChanges();
+
+            var response = new oneToOneResponse
+            {
+                senderId = senderId,
+                receiverId = receiverId,
+                filepath = filePath,
+                sendAt = DateTime.Now
             };
             return response;
         }
 
         public void AddUserToChatRoom(int userId, int roomId)
         {
-            var userChatRoom = new userChatRoom
+            var userChatRoom = new userChatRoomModel
             {
                 userId = userId,
                 chatRoomId = roomId,
@@ -101,5 +164,12 @@ namespace backendChatApplcation.Services
             _context.SaveChanges();
         }
 
+        public void RemoveUserFromChatRoom(int userId, int chatRoomId)
+        {
+            var userChatRoom = _context.UserChatRooms.FirstOrDefault(x => x.userId == userId && x.chatRoomId == chatRoomId);
+            _context.UserChatRooms.Remove(userChatRoom);
+            _context.SaveChanges();
+
+        }
     }
 }

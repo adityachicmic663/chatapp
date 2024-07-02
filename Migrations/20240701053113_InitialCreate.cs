@@ -7,17 +7,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace backendChatApplcation.Migrations
 {
     /// <inheritdoc />
-    public partial class SecondCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "isOnline",
-                table: "users",
-                type: "tinyint(1)",
-                nullable: false,
-                defaultValue: false);
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "ChatRooms",
@@ -36,16 +32,55 @@ namespace backendChatApplcation.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "users",
+                columns: table => new
+                {
+                    userId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    userName = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    role = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    email = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    password = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    phoneNumber = table.Column<long>(type: "bigint", nullable: false),
+                    emailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    address = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FirstLanguage = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    age = table.Column<int>(type: "int", nullable: false),
+                    gender = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    otpToken = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    OtpTokenExpiry = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    profilePicturePath = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    isOnline = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_users", x => x.userId);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "ChatMessages",
                 columns: table => new
                 {
                     chatMessageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     senderId = table.Column<int>(type: "int", nullable: false),
+                    receiverId = table.Column<int>(type: "int", nullable: true),
                     message = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    chatRoomId = table.Column<int>(type: "int", nullable: false),
-                    SendAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    chatRoomId = table.Column<int>(type: "int", nullable: true),
+                    filePath = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    sendAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,8 +89,7 @@ namespace backendChatApplcation.Migrations
                         name: "FK_ChatMessages_ChatRooms_chatRoomId",
                         column: x => x.chatRoomId,
                         principalTable: "ChatRooms",
-                        principalColumn: "chatRoomId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "chatRoomId");
                     table.ForeignKey(
                         name: "FK_ChatMessages_users_senderId",
                         column: x => x.senderId,
@@ -119,9 +153,8 @@ namespace backendChatApplcation.Migrations
             migrationBuilder.DropTable(
                 name: "ChatRooms");
 
-            migrationBuilder.DropColumn(
-                name: "isOnline",
-                table: "users");
+            migrationBuilder.DropTable(
+                name: "users");
         }
     }
 }
