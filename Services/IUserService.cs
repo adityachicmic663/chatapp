@@ -13,7 +13,7 @@ namespace backendChatApplcation.Services
 
         void RemoveUserOnline(string connectionId);
 
-        string GetConnectionId(int userId);
+        List<UserWithStatus> GetUsersWithStatus(int userId);
     }
 }
 

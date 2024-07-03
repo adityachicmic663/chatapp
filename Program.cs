@@ -93,6 +93,7 @@ namespace backendChatApplcation
             {
                 options.EnableDetailedErrors = true;
             });
+            services.AddSingleton<chatHub>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddScoped<IchatServices,chatServices>();

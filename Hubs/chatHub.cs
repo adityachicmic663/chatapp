@@ -1,5 +1,8 @@
 
+using backendChatApplcation.Models;
 using backendChatApplcation.Services;
+using backendChatApplication;
+using backendChatApplication.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -13,68 +16,77 @@ namespace backendChatApplcation.Hubs
         private readonly IchatServices _chatServices;
         private readonly IUserServices _userServices;
         private readonly IFileService _fileService;
-        private readonly ILogger<chatHub> _logger;
+        private readonly chatDataContext _context;
+
+
         
-
-
-
-        public chatHub(IchatServices chatService, IUserServices userService, IFileService fileService, ILogger<chatHub> logger)
+        public chatHub(IchatServices chatService, IUserServices userService, IFileService fileService)
         {
             _chatServices = chatService;
             _userServices = userService;
             _fileService = fileService;
-            _logger = logger;
-        }
-
-        public async Task AddUserToGroup(string groupName, string message, string userName)
-        {
-            
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("UserJoined", message, userName);
-        }
-
-
-        public async Task RemoveUserFromGroup(string groupName)
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("UserLeftGroup");
-        }
-        public async Task ShareFileToGroup(string groupName, int senderId, IFormFile file)
-        {
-            var filePath = await _fileService.SaveFileAsync(file);
-            await Clients.Group(groupName).SendAsync("ReceivedFileMessage", senderId, filePath);
-        }
-
-        public async Task ShareFileToUser(int senderId, string user, IFormFile file)
-        {
-            var filePath = await _fileService.SaveFileAsync(file);
-
-            await Clients.Client(user).SendAsync("ReceivedFileMessage", senderId, filePath);
-
-        }
-
-        public async Task SendMessageToGroup(string user, string message, string groupName)
-        {
-
-            await Clients.Group(groupName).SendAsync("ReceivedMessage", user, message);
            
         }
 
-        public async Task SendMessage(string message)
+
+        public async Task AddUserToGroup(int groupId, string message)
         {
-            try
+            if (_context.ChatRooms.Any(x => x.chatRoomId == groupId))
             {
-                await Clients.All.SendAsync("ReceivedMessage", message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error in SendMessage method: {ex.Message}");
-                throw;
+                var user = _context.users.FirstOrDefault(x => x.email == Context.User.Identity.Name);
+                _chatServices.AddUserToChatRoom(user.userId, groupId);
+                await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
+                await Clients.Group(groupId.ToString()).SendAsync("UserJoined", message);
             }
         }
-        public async Task SendPrivateMessage(string user, string message)
+
+
+        public async Task RemoveUserFromGroup(int groupId)
         {
-            await Clients.Users(user).SendAsync("ReceivedMessage", message);
+                var user = _context.users.FirstOrDefault(x => x.email == Context.User.Identity.Name);
+                  _chatServices.RemoveUserFromChatRoom(user.userId, groupId);
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
+                await Clients.Group(groupId.ToString()).SendAsync("UserLeftGroup");
+        }
+        public async Task ShareFileToGroup(int groupId,string filePath)
+        {
+            var sender = _context.users.FirstOrDefault(x => x.email == Context.User.Identity.Name);
+
+            if (sender != null && _context.ChatRooms.Any(x => x.chatRoomId == groupId))
+            {
+                _chatServices.SendFileMessage(sender.userId, groupId, filePath);
+                await Clients.Group(groupId.ToString()).SendAsync("ReceivedFileMessage", filePath);
+            }
+        }
+
+        public async Task ShareFileToUser( string userEmail, string filePath)
+        {
+            var sender = _context.users.FirstOrDefault(x => x.email == Context.User.Identity.Name);
+            var receiver = _context.users.FirstOrDefault(x => x.email == userEmail);
+
+            if (sender != null && receiver != null)
+            {
+                _chatServices.SendDirectFileMessage(sender.userId, receiver.userId, filePath);
+                await Clients.User(userEmail).SendAsync("ReceivedFileMessage", sender.userId, filePath);
+            }
+
+        }
+
+        public async Task SendMessageToGroup(string message, int groupId)
+        {
+            string userEmail = Context.User.Identity.Name;
+            var user=_context.users.FirstOrDefault(x=>x.email == userEmail);
+            _chatServices.SendMessage(user.userId, groupId, message);
+
+            await Clients.Group(groupId.ToString()).SendAsync("ReceivedGroupMessage",message);
+        }
+
+        public async Task SendPrivateMessage(string userEmail,string message)
+        {
+            var receiver = _context.users.FirstOrDefault(c => c.email == userEmail);
+            var sender = _context.users.FirstOrDefault(x => x.email == Context.User.Identity.Name);
+            _chatServices.SendDirectMessage(sender.userId, receiver.userId, message);
+          Clients.User(userEmail).SendAsync("receivedUserMessage",message);
         }
 
         public override async Task OnConnectedAsync()
@@ -87,7 +99,6 @@ namespace backendChatApplcation.Hubs
                 _userServices.AddUserOnline(Context.ConnectionId, userId);
                 await Clients.All.SendAsync("UserConnected", $"{Context.ConnectionId}{userId} has joined the chat");
                 await Groups.AddToGroupAsync(Context.ConnectionId, userId);
-
             }
         }
 
@@ -107,14 +118,17 @@ namespace backendChatApplcation.Hubs
             await base.OnDisconnectedAsync(ex);
         }
 
-        public async Task<List<string>> onlineUsers()
+        public async Task<List<UserWithStatus>> UsersWithStatus()
         {
-            var list = _userServices.GetOnlineUsers();
-            foreach(var onlineusers in list)
+
+            string userEmail = Context.User.Identity.Name;
+            var currentUser = _context.users.FirstOrDefault(u => u.email == userEmail);
+            if (currentUser != null)
             {
-                Console.WriteLine($"Online users: {onlineusers}");
+                var usersWithStatus = _userServices.GetUsersWithStatus(currentUser.userId);
+                return usersWithStatus;
             }
-            return list;
+            return new List<UserWithStatus>();
         }
 
     }

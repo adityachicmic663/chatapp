@@ -115,9 +115,7 @@ namespace backendChatApplication.Services
             user.OtpTokenExpiry = DateTime.UtcNow.AddMinutes(15);
             _context.SaveChanges();
 
-            var callbackUrl = $"https://localhost:7097/reset-password?token={token}";
-
-            _emailSender.SendEmailAsync(user.email, "Reset password", $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>").Wait();
+            _emailSender.SendEmailAsync(user.email, "Reset password", $"your otp is{token}").Wait();
 
             return true;
         }

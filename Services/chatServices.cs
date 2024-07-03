@@ -153,6 +153,7 @@ namespace backendChatApplcation.Services
 
         public void AddUserToChatRoom(int userId, int roomId)
         {
+           
             var userChatRoom = new userChatRoomModel
             {
                 userId = userId,

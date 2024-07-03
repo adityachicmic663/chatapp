@@ -1,6 +1,6 @@
 namespace backendChatApplcation.Requests
 {
-    public class sendMessageRequest
+    public class groupMessageRequest
     {
         public int senderId { get; set; }
 
