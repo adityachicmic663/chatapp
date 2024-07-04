@@ -12,8 +12,8 @@ using backendChatApplication;
 namespace backendChatApplcation.Migrations
 {
     [DbContext(typeof(chatDataContext))]
-    [Migration("20240701053113_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240704120821_thirdCreate")]
+    partial class thirdCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,8 +39,10 @@ namespace backendChatApplcation.Migrations
                     b.Property<string>("filePath")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("filetype")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("message")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int?>("receiverId")

@@ -12,12 +12,12 @@ namespace backendChatApplcation.Services
 
         oneToOneResponse SendDirectMessage(int senderId, int receiverId, string message);
 
-        void AddUserToChatRoom(int userId, int roomId);
+        void  AddUserToChatRoom(int userId, int roomId);
 
         void RemoveUserFromChatRoom(int userId, int chatRoomId);
 
-        groupChatResponse SendFileMessage(int senderId, int chatRoomId, string filePath);
+        Task<oneToOneResponse> SendDirectFileMessage(int senderId, int receiverId, IFormFile file);
 
-        oneToOneResponse SendDirectFileMessage(int senderId, int receiverId, string filePath);
+        Task<groupChatResponse> SendFileMessage(int senderId, int chatRoomId, IFormFile file);
     }
 }

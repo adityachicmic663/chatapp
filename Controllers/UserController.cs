@@ -54,6 +54,42 @@ namespace backendChatApplcation.Controllers
                 });
             }
         }
+        [HttpGet("userWithStatus")]
+        public async Task<IActionResult> getUserWithStatus(int userId)
+        {
+            try
+            {
+                var userList = _userService.GetUsersWithStatus(userId);
+                if(userList == null|| userList.Count==0)
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        statusCode=404,
+                        message="not found",
+                        data="no data",
+                        isSuccess=false
+                    });
+                }
+                return Ok(new ResponseModel
+                {
+                    statusCode=200,
+                    message="get your users",
+                    data=userList,
+                    isSuccess=true
+                });
+            }catch(Exception ex)
+            {
+                return StatusCode(500, new ResponseModel
+                {
+                    statusCode = 500,
+                    message = ex.Message,
+                    data = "no data",
+                    isSuccess = false
+                });
+            }
+        }
+
+
        
        
     }

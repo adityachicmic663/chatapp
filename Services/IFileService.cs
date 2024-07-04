@@ -4,5 +4,7 @@
     {
         Task<string> SaveFileAsync(IFormFile file);
 
+        string GetFileType(string contentType);
+
     }
 }

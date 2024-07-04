@@ -21,6 +21,8 @@ namespace backendChatApplication
         public DbSet<chatMessageModel> ChatMessages { get; set; }
         public DbSet<userChatRoomModel> UserChatRooms { get; set; }
 
+        public DbSet<ConnectedUser> UserConnections { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -42,7 +44,8 @@ namespace backendChatApplication
 
             modelBuilder.Entity<UserModel>().HasKey(u => u.userId);
             modelBuilder.Entity<chatRoomModel>().HasKey(c => c.chatRoomId);
-            modelBuilder.Entity<chatMessageModel>().HasKey(m => m.chatMessageId);
+            
+        modelBuilder.Entity<chatMessageModel>().HasKey(m => m.chatMessageId);
             modelBuilder.Entity<userChatRoomModel>().HasKey(ur => new { ur.userId, ur.chatRoomId });
 
            

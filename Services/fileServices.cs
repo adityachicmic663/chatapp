@@ -30,5 +30,17 @@
             return filePath;
 
         }
+
+        public string GetFileType(string contentType)
+        {
+            if (contentType.StartsWith("image/"))
+                return "Image";
+            if (contentType == "application/pdf")
+                return "Pdf";
+            if (contentType.StartsWith("text/"))
+                return "Text";
+
+            return "Other";
+        }
     }
 }

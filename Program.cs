@@ -6,9 +6,9 @@ using backendChatApplication.Models;
 using backendChatApplication.Services;
 using backendChatApplication;
 using System.Security.Claims;
-using backendChatApplcation.Hubs;
 using backendChatApplcation.Services;
 using Microsoft.AspNetCore.Http.Connections;
+using backendChatApplication.Hubs;
 
 namespace backendChatApplcation
 {
@@ -93,7 +93,7 @@ namespace backendChatApplcation
             {
                 options.EnableDetailedErrors = true;
             });
-            services.AddSingleton<chatHub>();
+            services.AddTransient<chatHub>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddScoped<IchatServices,chatServices>();

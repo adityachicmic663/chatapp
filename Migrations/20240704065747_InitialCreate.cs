@@ -80,6 +80,8 @@ namespace backendChatApplcation.Migrations
                     chatRoomId = table.Column<int>(type: "int", nullable: true),
                     filePath = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    filetype = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     sendAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>

@@ -8,6 +8,9 @@
 
         public string message { get; set; }
         public string? filePath { get; set; }
+
+        public string? filetype { get; set; }
+
         public DateTime sendAt { get; set; }
     }
 }

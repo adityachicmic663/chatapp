@@ -12,10 +12,12 @@ namespace backendChatApplcation.Models
         public UserModel sender { get; set; }
 
         public int? receiverId { get; set; }
-        public string message { get; set; }
+        public string? message { get; set; }
         public int? chatRoomId { get; set; }
 
         public string? filePath { get; set; }
+
+        public string? filetype { get; set; }
 
         public chatRoomModel chatRoom { get; set; }
         public DateTime sendAt { get; set; }

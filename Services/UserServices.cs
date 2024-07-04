@@ -1,6 +1,7 @@
-using backendChatApplcation.Hubs;
+
 using backendChatApplcation.Models;
 using backendChatApplication;
+using backendChatApplication.Hubs;
 using backendChatApplication.Models;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
@@ -43,7 +44,10 @@ namespace backendChatApplcation.Services
         {
             if (_onlineUsers.TryAdd(connectionId, userId))
             {
-                UpdateUserStatus(int.Parse(userId), true);
+                if (int.TryParse(userId, out int parsedUserId))
+                {
+                    UpdateUserStatus(parsedUserId, true);
+                }
             }
         }
 
@@ -51,7 +55,10 @@ namespace backendChatApplcation.Services
         {
             if (_onlineUsers.TryRemove(connectionId, out string userId))
             {
-                UpdateUserStatus(int.Parse(userId), false);
+                if (int.TryParse(userId, out int parsedUserId))
+                {
+                    UpdateUserStatus(parsedUserId, false);
+                }
             }
         }
 
