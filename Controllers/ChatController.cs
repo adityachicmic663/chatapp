@@ -59,7 +59,7 @@ namespace backendChatApplcation.Controllers
         {
             try
             {
-                var newRoom = _chatService.CreateChatRoom(request.RoomName, request.CreatorId);
+                var newRoom = _chatService.CreateChatRoom(request.roomId,request.RoomName, request.CreatorId);
                 if (newRoom == null){
                     return BadRequest(new ResponseModel
                     {
@@ -92,7 +92,7 @@ namespace backendChatApplcation.Controllers
 
         [HttpPost("upload/group/{chatRoomId}")]
 
-        public async Task<IActionResult> UploadFileToGroup(int senderId,int chatRoomId, IFormFile file)
+        public async Task<ActionResult<groupChatResponse>> UploadFileToGroup(int senderId,int chatRoomId, IFormFile file)
         {
             try
             {
@@ -127,31 +127,30 @@ namespace backendChatApplcation.Controllers
             }
         }
         [HttpPost("upload/personal")]
-        public async Task<IActionResult> UploadFileToUser(int senderId,int receiverId,IFormFile file)
+        public async Task<ActionResult<oneToOneResponse>> UploadFileToUser(int senderId,int receiverId,IFormFile file)
         {
             try
             {
-                if (file == null || file.Length == 0)
+                var newMessage = await _chatService.SendDirectFileMessage(senderId, receiverId, file);
+                if (newMessage == null)
                 {
-                    return BadRequest(new ResponseModel
+                    return StatusCode(500, new ResponseModel
                     {
-                        statusCode = 400,
-                        message = "file is not selected",
-                        data = "no data",
+                        statusCode = 500,
+                        message = "Error occurred while sending direct file message.",
+                        data = "No data",
                         isSuccess = false
                     });
                 }
-
-                var response = _chatService.SendDirectFileMessage(senderId, receiverId, file);
                 return Ok(new ResponseModel
                 {
                     statusCode = 200,
-                    message = " your file message",
-                    data = response,
+                    message = "Direct file message sent successfully.",
+                    data = newMessage,
                     isSuccess = true
                 });
-
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, new ResponseModel
                 {

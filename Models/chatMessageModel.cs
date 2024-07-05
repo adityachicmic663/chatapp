@@ -1,11 +1,14 @@
 
 using backendChatApplication.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backendChatApplcation.Models
 {
     public class chatMessageModel
     {
-
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int chatMessageId { get; set; }
         public int senderId { get; set; }
 

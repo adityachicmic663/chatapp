@@ -24,37 +24,75 @@ namespace backendChatApplcation.Services
         }
         public List<chatRoomResponse> GetChatRoomsForUser(int userId)
         {
-            var chatRooms = _context.UserChatRooms.Where(ucr => ucr.userId == userId).Select(ucr => new
-            {
-                ucr.ChatRoom,
-                lastMessageTime = _context.ChatMessages
-                                    .Where(cm => cm.chatRoomId == ucr.chatRoomId)
-                                    .OrderByDescending(cm=>cm.sendAt)
-                                    .Select(cm => (DateTime?)cm.sendAt)
-                                    .FirstOrDefault()
-            })
-             .OrderByDescending(cr => cr.lastMessageTime)
-             .ToList(); 
-         
-            var responseList = new List<chatRoomResponse>();
+            var chatResponses = new List<chatRoomResponse>();
 
-            foreach (var room in chatRooms)
-            {
-                var newRoom = new chatRoomResponse
+            var groupChats = _context.UserChatRooms
+                .Where(ucr => ucr.userId == userId)
+                .Select(ucr => new
                 {
-                    chatRoomName = room.ChatRoom.chatRoomName,
-                    CreatedAt = room.ChatRoom.CreatedAt,
-                    lastMessageTime=room.lastMessageTime
-                };
-                responseList.Add(newRoom);
+                    ucr.ChatRoom,
+                    lastMessageTime = _context.ChatMessages
+                                        .Where(cm => cm.chatRoomId == ucr.chatRoomId)
+                                        .OrderByDescending(cm => cm.sendAt)
+                                        .Select(cm => (DateTime?)cm.sendAt)
+                                        .FirstOrDefault()
+                })
+                .ToList();
+
+          
+            var directChats = _context.ChatMessages
+                .Where(cm => cm.senderId == userId || cm.receiverId == userId)
+                .GroupBy(cm => cm.senderId == userId ? cm.receiverId : cm.senderId)
+                .Select(g => new
+                {
+                    ChatRoom = (chatRoomModel)null,
+                    DirectUser = _context.users.FirstOrDefault(u => u.userId == g.Key),
+                    firstMessage = g.OrderBy(cm => cm.sendAt).FirstOrDefault(), 
+                    lastMessageTime = g.Max(cm => cm.sendAt) 
+                })
+                .ToList();
+
+           
+            foreach (var group in groupChats)
+            {
+                if (group.ChatRoom != null)
+                {
+                    var newGroupChat = new chatRoomResponse
+                    {
+                        chatRoomId = group.ChatRoom.chatRoomId,
+                        chatRoomName = group.ChatRoom.chatRoomName,
+                        CreatedAt = group.ChatRoom.CreatedAt,
+                        lastMessageTime = group.lastMessageTime
+                    };
+                    chatResponses.Add(newGroupChat);
+                }
             }
-            return responseList;
+
+            foreach (var direct in directChats)
+            {
+                if (direct.DirectUser != null && direct.firstMessage != null)
+                {
+                    var newDirectChat = new chatRoomResponse
+                    {
+                        chatRoomId = direct.firstMessage.chatMessageId,
+                        chatRoomName = direct.DirectUser.userName,
+                        CreatedAt = direct.firstMessage.sendAt,
+                        lastMessageTime = direct.lastMessageTime
+                    };
+                    chatResponses.Add(newDirectChat);
+                }
+            }
+
+          
+            return chatResponses.OrderByDescending(cr => cr.lastMessageTime).ToList();
+
         }
 
-        public chatRoomResponse CreateChatRoom(string roomName, int creatorId)
+        public chatRoomResponse CreateChatRoom(int roomId,string roomName, int creatorId)
         {
             var newRoom = new chatRoomModel
             {
+                chatRoomId = roomId,
                 chatRoomName = roomName,
                 CreatedAt = DateTime.Now
             };
@@ -82,7 +120,7 @@ namespace backendChatApplcation.Services
             return response;
         }
 
-        public groupChatResponse SendMessage(int senderId, int chatRoomId, string message)
+        public void  SendMessage(int senderId, int chatRoomId, string message)
         {
             var newMessage = new chatMessageModel
             {
@@ -94,39 +132,28 @@ namespace backendChatApplcation.Services
             };
             _context.ChatMessages.Add(newMessage);
             _context.SaveChanges();
-
-            var response = new groupChatResponse
-            {
-                senderId = senderId,
-                chatRoomId = chatRoomId,
-                message = message,
-                sendAt = newMessage.sendAt
-            };
-
-            return response;
         }
-        public oneToOneResponse SendDirectMessage(int senderId, int receiverId, string message)
+        public void SendDirectMessage(int senderId, int receiverId, string message)
         {
-            var newMessage = new chatMessageModel
+            try
             {
-                senderId = senderId,
-                receiverId = receiverId,
-                message = message,
-                sendAt = DateTime.Now,
-                filetype= null
-            };
-            _context.ChatMessages.Add(newMessage);
-            _context.SaveChanges();
+                var newMessage = new chatMessageModel
+                {
+                    senderId = senderId,
+                    receiverId = receiverId,
+                    message = message,
+                    sendAt = DateTime.Now
+                };
+                _context.ChatMessages.Add(newMessage);
+                _context.SaveChanges();
 
-            var response = new oneToOneResponse
+             
+            }catch(Exception ex) 
             {
-                senderId = senderId,
-                receiverId = receiverId,
-                message = message,
-                sendAt = newMessage.sendAt
-            };
-
-            return response;
+                Console.WriteLine($"Exception sending direct message: {ex.Message}");
+                throw; 
+            }
+            
         }
         public async Task<groupChatResponse> SendFileMessage(int senderId, int chatRoomId,IFormFile file)
         {

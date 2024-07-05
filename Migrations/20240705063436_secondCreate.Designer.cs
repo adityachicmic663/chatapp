@@ -12,8 +12,8 @@ using backendChatApplication;
 namespace backendChatApplcation.Migrations
 {
     [DbContext(typeof(chatDataContext))]
-    [Migration("20240704120821_thirdCreate")]
-    partial class thirdCreate
+    [Migration("20240705063436_secondCreate")]
+    partial class secondCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,39 @@ namespace backendChatApplcation.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("backendChatApplcation.Models.ConnectedUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ConnectedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ConnectionId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserConnections");
+                });
 
             modelBuilder.Entity("backendChatApplcation.Models.chatMessageModel", b =>
                 {
@@ -161,6 +194,17 @@ namespace backendChatApplcation.Migrations
                     b.HasKey("userId");
 
                     b.ToTable("users");
+                });
+
+            modelBuilder.Entity("backendChatApplcation.Models.ConnectedUser", b =>
+                {
+                    b.HasOne("backendChatApplication.Models.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("backendChatApplcation.Models.chatMessageModel", b =>

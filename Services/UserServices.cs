@@ -2,7 +2,6 @@
 using backendChatApplcation.Models;
 using backendChatApplication;
 using backendChatApplication.Hubs;
-using backendChatApplication.Models;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 
@@ -15,9 +14,10 @@ namespace backendChatApplcation.Services
         private static ConcurrentDictionary<string, string> _onlineUsers = new ConcurrentDictionary<string, string>();
 
 
-        public UserServices(chatDataContext context)
+        public UserServices(chatDataContext context,IHubContext<chatHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         public List<UserResponse> SearchUser(string searchkey)
@@ -107,7 +107,7 @@ namespace backendChatApplcation.Services
             var directMessages = _context.ChatMessages
                 .Where(m => m.senderId == userId || m.receiverId == userId)
                 .Select(m => m.senderId == userId ? m.receiverId : m.senderId)
-                .Where(id => id.HasValue)
+                .Where(id => id.HasValue&& id.Value!=userId)
                 .Select(id => id.Value)
                 .Distinct()
                 .ToList();

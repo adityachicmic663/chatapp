@@ -1,13 +1,10 @@
 using backendChatApplcation.Models;
 using backendChatApplcation.Services;
-using backendChatApplication.Models;
-using backendChatApplication.Services;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace backendChatApplication.Hubs
 {
@@ -49,10 +46,9 @@ namespace backendChatApplication.Hubs
                 if (!_context.UserChatRooms.Any(uc => uc.userId == user.userId && uc.chatRoomId == groupId))
                 {
                     _chatServices.AddUserToChatRoom(user.userId, groupId);
+                    await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
+                    await Clients.Group(groupId.ToString()).SendAsync("UserJoined", message);
                 }
-
-                await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
-                await Clients.Group(groupId.ToString()).SendAsync("UserJoined", message);
             }
             catch (DbUpdateException ex)
             {
@@ -80,7 +76,7 @@ namespace backendChatApplication.Hubs
             await Clients.Group(groupId.ToString()).SendAsync("UserLeftGroup");
         }
 
-        public async Task ShareFileToGroup(int groupId, string filePath)
+/*        public async Task ShareFileToGroup(int groupId, string filePath)
         {
             var sender = _context.users.FirstOrDefault(x => x.email == Context.User.Identity.Name);
 
@@ -99,7 +95,7 @@ namespace backendChatApplication.Hubs
             {
                 await Clients.User(userEmail).SendAsync("ReceivedFileMessage", sender.userId, filePath);
             }
-        }
+        }*/
 
         public async Task SendMessageToGroup(string message, int groupId)
         {
@@ -111,26 +107,52 @@ namespace backendChatApplication.Hubs
                 if (user != null && _context.UserChatRooms.Any(x => x.chatRoomId == groupId && x.userId == user.userId))
                 {
                     _chatServices.SendMessage(user.userId, groupId, message);
-                }
 
-                await Clients.Group(groupId.ToString()).SendAsync("ReceivedGroupMessage", message);
+                    await Clients.Group(groupId.ToString()).SendAsync("ReceivedGroupMessage", message,user.userId);
+                }
+                else
+                {
+                    await Clients.Caller.SendAsync("Error", "You are not a member of this group.");
+                }
             }
             catch (DbUpdateException ex)
             {
                 Console.WriteLine($"DbUpdateException: {ex.InnerException?.Message ?? ex.Message}");
                 await Clients.Caller.SendAsync("Error", "An error occurred while saving changes to the database.");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.InnerException?.Message ?? ex.Message}");
+                await Clients.Caller.SendAsync("Error", "An unexpected error occurred.");
+            }
+
         }
 
         public async Task SendPrivateMessage(string userEmail, string message)
         {
-            var receiver = _context.users.FirstOrDefault(c => c.email == userEmail);
-            var sender = _context.users.FirstOrDefault(x => x.email == Context.User.Identity.Name);
-
-            if (sender != null && receiver != null)
+            try
             {
-                _chatServices.SendDirectMessage(sender.userId, receiver.userId, message);
-                await Clients.User(userEmail).SendAsync("ReceivedUserMessage", message);
+                var receiver = _context.users.FirstOrDefault(c => c.email == userEmail);
+                var sender = _context.users.FirstOrDefault(x => x.email == Context.User.Identity.Name);
+                                   
+                if (sender != null && receiver != null)
+                {
+                    Console.WriteLine($"Sending private message from {sender.email} to {receiver.email}");
+                    _chatServices.SendDirectMessage(sender.userId, receiver.userId, message);
+                    Console.WriteLine("Messages saved");
+                    var receiverUserId = receiver.userId.ToString();
+                    await Clients.User(receiverUserId).SendAsync("ReceivedUserMessage", message);
+                }
+                else
+                {
+                    Console.WriteLine("Sender or receiver not found.");
+                    await Clients.Caller.SendAsync("Error", "Sender or receiver not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.InnerException?.Message ?? ex.Message}");
+                await Clients.Caller.SendAsync("Error", "An unexpected error occurred.");
             }
         }
 

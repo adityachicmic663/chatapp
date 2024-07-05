@@ -1,4 +1,3 @@
-
 using backendChatApplcation.Models;
 namespace backendChatApplcation.Services
 {
@@ -6,11 +5,11 @@ namespace backendChatApplcation.Services
     {
         List<chatRoomResponse> GetChatRoomsForUser(int userId);
 
-        chatRoomResponse CreateChatRoom(string roomName, int creatorId);
+        chatRoomResponse CreateChatRoom(int roomId,string roomName, int creatorId);
 
-        groupChatResponse SendMessage(int senderId, int chatRoomId, string message);
+       void SendMessage(int senderId, int chatRoomId, string message);
 
-        oneToOneResponse SendDirectMessage(int senderId, int receiverId, string message);
+        void SendDirectMessage(int senderId, int receiverId, string message);
 
         void  AddUserToChatRoom(int userId, int roomId);
 
