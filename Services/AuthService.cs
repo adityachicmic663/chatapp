@@ -15,16 +15,18 @@ namespace backendChatApplication.Services
         private readonly chatDataContext _context;
         private readonly string _secretkey;
         private readonly IEmailSender _emailSender;
+        private readonly IHttpContextAccessor _httpcontextAccessor;
         private readonly string _uploadPath;
         private readonly string[] _permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
         private readonly string[] _permittedMimeTypes = { "image/jpeg", "image/png", "image/gif" };
 
-        public AuthService(chatDataContext context, IOptions<JwtSettings> jwtsettings, IEmailSender emailSender, IConfiguration configuration)
+        public AuthService(chatDataContext context, IOptions<JwtSettings> jwtsettings, IEmailSender emailSender, IConfiguration configuration, IHttpContextAccessor httpcontextAccessor)
         {
             _context = context;
             _secretkey = jwtsettings.Value.SecretKey;
             _emailSender = emailSender;
             _uploadPath = configuration.GetValue<string>("UploadPath");
+            _httpcontextAccessor = httpcontextAccessor;
         }
 
         public UserResponse Register(RegisterRequest request)
@@ -38,7 +40,7 @@ namespace backendChatApplication.Services
             {
                 userName = request.userName,
                 email = request.email,
-                password = request.password,
+                password = BCrypt.Net.BCrypt.HashPassword(request.password),
                 role = "user",
                 FirstLanguage="English",
                 profilePicturePath=request.profilePicturePath,
@@ -65,9 +67,13 @@ namespace backendChatApplication.Services
 
         public string Login(LoginRequest request)
         {
-            var user = _context.users.SingleOrDefault(x => x.email == request.email && x.password == request.password);
+            var user = _context.users.SingleOrDefault(x => x.email == request.email);
 
             if (user == null)
+            {
+                return null;
+            }
+            if(!BCrypt.Net.BCrypt.Verify( request.password,user.password))
             {
                 return null;
             }
@@ -77,13 +83,14 @@ namespace backendChatApplication.Services
 
         public string PasswordReset(PasswordRequest request)
         {
-            var user = _context.users.SingleOrDefault(x => x.password == request.OldPassword);
+            var UserEmailClaim = _httpcontextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+            var user = _context.users.SingleOrDefault(x => x.email == UserEmailClaim);
             if (user == null)
             {
                 return null;
             }
 
-            user.password = request.newPassword;
+            user.password =BCrypt.Net.BCrypt.HashPassword(request.newPassword);
             _context.SaveChanges();
             return "Password updated successfully";
         }
@@ -96,7 +103,7 @@ namespace backendChatApplication.Services
                 return null;
             }
 
-            user.password = request.newPassword;
+            user.password = BCrypt.Net.BCrypt.HashPassword(request.newPassword);
             _context.SaveChanges();
             return "Password updated successfully";
         }
@@ -176,7 +183,7 @@ namespace backendChatApplication.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-
+        
         public async Task<string> imageUpload(string email, IFormFile file)
         {
             try
