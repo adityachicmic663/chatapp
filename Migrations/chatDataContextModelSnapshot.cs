@@ -88,6 +88,8 @@ namespace backendChatApplcation.Migrations
 
                     b.HasIndex("chatRoomId");
 
+                    b.HasIndex("receiverId");
+
                     b.HasIndex("senderId");
 
                     b.ToTable("ChatMessages");
@@ -210,6 +212,10 @@ namespace backendChatApplcation.Migrations
                         .WithMany("Messages")
                         .HasForeignKey("chatRoomId");
 
+                    b.HasOne("backendChatApplication.Models.UserModel", "receiver")
+                        .WithMany()
+                        .HasForeignKey("receiverId");
+
                     b.HasOne("backendChatApplication.Models.UserModel", "sender")
                         .WithMany("SentMessages")
                         .HasForeignKey("senderId")
@@ -217,6 +223,8 @@ namespace backendChatApplcation.Migrations
                         .IsRequired();
 
                     b.Navigation("chatRoom");
+
+                    b.Navigation("receiver");
 
                     b.Navigation("sender");
                 });

@@ -12,7 +12,7 @@ using backendChatApplication;
 namespace backendChatApplcation.Migrations
 {
     [DbContext(typeof(chatDataContext))]
-    [Migration("20240705035250_InitialCreate")]
+    [Migration("20240710050824_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -90,6 +90,8 @@ namespace backendChatApplcation.Migrations
                     b.HasKey("chatMessageId");
 
                     b.HasIndex("chatRoomId");
+
+                    b.HasIndex("receiverId");
 
                     b.HasIndex("senderId");
 
@@ -213,6 +215,10 @@ namespace backendChatApplcation.Migrations
                         .WithMany("Messages")
                         .HasForeignKey("chatRoomId");
 
+                    b.HasOne("backendChatApplication.Models.UserModel", "receiver")
+                        .WithMany()
+                        .HasForeignKey("receiverId");
+
                     b.HasOne("backendChatApplication.Models.UserModel", "sender")
                         .WithMany("SentMessages")
                         .HasForeignKey("senderId")
@@ -220,6 +226,8 @@ namespace backendChatApplcation.Migrations
                         .IsRequired();
 
                     b.Navigation("chatRoom");
+
+                    b.Navigation("receiver");
 
                     b.Navigation("sender");
                 });

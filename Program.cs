@@ -99,6 +99,8 @@ namespace backendChatApplcation
             services.AddScoped<IchatServices,chatServices>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IFileService, fileServices>();
+            services.AddHttpContextAccessor();
+
         }
 
         private static void Configure(WebApplication app)

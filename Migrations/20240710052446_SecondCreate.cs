@@ -5,7 +5,7 @@
 namespace backendChatApplcation.Migrations
 {
     /// <inheritdoc />
-    public partial class secondCreate : Migration
+    public partial class SecondCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

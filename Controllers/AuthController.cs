@@ -120,6 +120,7 @@ namespace backendChatApplication.Controllers
                 });
             }
         }
+
         [Authorize(Roles="user,admin")]
         [HttpPost("userpasswordreset")]
         public IActionResult PasswordReset(PasswordRequest request)

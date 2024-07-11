@@ -93,6 +93,11 @@ namespace backendChatApplcation.Migrations
                         principalTable: "ChatRooms",
                         principalColumn: "chatRoomId");
                     table.ForeignKey(
+                        name: "FK_ChatMessages_users_receiverId",
+                        column: x => x.receiverId,
+                        principalTable: "users",
+                        principalColumn: "userId");
+                    table.ForeignKey(
                         name: "FK_ChatMessages_users_senderId",
                         column: x => x.senderId,
                         principalTable: "users",
@@ -158,6 +163,11 @@ namespace backendChatApplcation.Migrations
                 name: "IX_ChatMessages_chatRoomId",
                 table: "ChatMessages",
                 column: "chatRoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessages_receiverId",
+                table: "ChatMessages",
+                column: "receiverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessages_senderId",

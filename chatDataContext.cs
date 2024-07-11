@@ -3,6 +3,7 @@ using backendChatApplcation.Models;
 
 using backendChatApplication.Models;
 using Microsoft.EntityFrameworkCore;
+using BCrypt.Net;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 
@@ -20,7 +21,6 @@ namespace backendChatApplication
         public DbSet<chatRoomModel> ChatRooms { get; set; }
         public DbSet<chatMessageModel> ChatMessages { get; set; }
         public DbSet<userChatRoomModel> UserChatRooms { get; set; }
-
         public DbSet<ConnectedUser> UserConnections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -76,11 +76,24 @@ namespace backendChatApplication
         {
            
                 var adminExists = this.users.Any(x => x.userName == "aditya" && x.role == "admin");
-                if (!adminExists)
+            var password = "Aditya@123";
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+
+            Console.WriteLine($"Hashed Password: {hashedPassword}");
+
+            if (!adminExists)
+                {
+                try
                 {
                     this.Database.ExecuteSqlRaw(@"
                         INSERT INTO users(userName, role, email, password, phoneNumber, emailConfirmed,address, firstLanguage, age, gender,isOnline)
-                        VALUES('aditya', 'admin', 'adityabisht8436@gmail.com', 'Aditya@123', 97643567, true,'Rudrapur','Hindi', 23, 'Male',false)");
+                        VALUES('aditya', 'admin', 'adityabisht8436@gmail.com', {0}, 97643567, true,'Rudrapur','Hindi', 23, 'Male',false)", hashedPassword);
+                }catch(Exception ex)
+                {
+                    Console.WriteLine($"ExceptionOccured{ex.Message}");
+                    throw;
+                }
+                    
                 }
                 
            

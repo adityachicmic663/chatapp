@@ -3,15 +3,17 @@ namespace backendChatApplcation.Services
 {
     public interface IchatServices
     {
-        List<chatRoomResponse> GetChatRoomsForUser(int userId);
+        List<chatRoomResponse>GetChatRoomsForUser(int userId,int pageNumber,int pageSize);
 
-        chatRoomResponse CreateChatRoom(int roomId,string roomName, int creatorId);
+        chatRoomResponse CreateChatRoom(string roomName);
 
-       void SendMessage(int senderId, int chatRoomId, string message);
+        void SaveGroupMessages(int senderId, int chatRoomId, string message);
 
-        void SendDirectMessage(int senderId, int receiverId, string message);
+        void SaveDirectMessages(int senderId, int receiverId, string message,int chatRoomId);
 
         void  AddUserToChatRoom(int userId, int roomId);
+
+        Task<(List<chatResponse>, int)> GetChatAsync(int chatRoomId, int pageNumber, int pageSize);
 
         void RemoveUserFromChatRoom(int userId, int chatRoomId);
 
